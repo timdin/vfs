@@ -15,9 +15,14 @@ const (
 	DB   Mode = "database"
 )
 
+type DBConfig struct {
+	Conn string `yaml:"conn"`
+}
+
 // define config type
 type Config struct {
-	Mode Mode `yaml:"mode"`
+	Mode     Mode     `yaml:"mode"`
+	DBconfig DBConfig `yaml:"database"`
 }
 
 var AppConfig *Config
