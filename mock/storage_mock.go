@@ -61,6 +61,20 @@ func (mr *MockStorageMockRecorder) CreateFolder(arg0, arg1, arg2 interface{}) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateFolder", reflect.TypeOf((*MockStorage)(nil).CreateFolder), arg0, arg1, arg2)
 }
 
+// DeleteFile mocks base method.
+func (m *MockStorage) DeleteFile(arg0, arg1, arg2 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteFile", arg0, arg1, arg2)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteFile indicates an expected call of DeleteFile.
+func (mr *MockStorageMockRecorder) DeleteFile(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteFile", reflect.TypeOf((*MockStorage)(nil).DeleteFile), arg0, arg1, arg2)
+}
+
 // DeleteFolder mocks base method.
 func (m *MockStorage) DeleteFolder(arg0, arg1 string) error {
 	m.ctrl.T.Helper()

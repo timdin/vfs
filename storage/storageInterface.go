@@ -10,7 +10,7 @@ type Storage interface {
 	CreateFolder(userName, folderName, description string) error
 	CreateFile(userName, folderName, fileName, description string) error
 	DeleteFolder(userName, folderName string) error
-	// DeleteFile(user, folderName, fileName string) error
+	DeleteFile(userName, folderName, fileName string) error
 	// ListFolder(user, sortBy, order string) error
 	// ListFile(user, folderName, sortBy, order string) error
 }

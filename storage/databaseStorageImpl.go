@@ -100,9 +100,40 @@ func (db *DBImpl) DeleteFolder(userName, folderName string) error {
 	data := &model.Folder{
 		Model: gorm.Model{ID: existingFolder.ID},
 	}
+	tx := db.db.Begin()
+	if err := tx.Delete(data).Error; err != nil {
+		// Handle the error, which can occur if the name conflicts
+		tx.Rollback()
+		return errors.New("Failed to delete folder: " + err.Error())
+	}
+	if err := tx.Delete(&model.File{}, "folder_id =?", existingFolder.ID).Error; err != nil {
+		tx.Rollback()
+		return errors.New("Failed to delete files under deleting folder: " + err.Error())
+	}
+	tx.Commit()
+	return nil
+}
+
+func (db *DBImpl) DeleteFile(userName, folderName, fileName string) error {
+	var existingUser *model.User
+	if err := db.db.Where("name =?", userName).First(&existingUser).Error; err != nil {
+		return errors.New("Failed to find user: " + err.Error())
+	}
+	var existingFolder *model.Folder
+	if err := db.db.Where("user_id =? and name =?", existingUser.ID, folderName).First(&existingFolder).Error; err != nil {
+		return errors.New("Failed to find folder: " + err.Error())
+	}
+	var existingFile *model.File
+	if err := db.db.Where("user_id =? and folder_id=? and name =?", existingUser.ID, existingFolder.ID, fileName).First(&existingFile).Error; err != nil {
+		return errors.New("Failed to find file: " + err.Error())
+	}
+	data := &model.File{
+		Model: gorm.Model{ID: existingFile.ID},
+	}
+
 	if err := db.db.Delete(data).Error; err != nil {
 		// Handle the error, which can occur if the name conflicts
-		return errors.New("Failed to delete folder: " + err.Error())
+		return errors.New("Failed to delete file: " + err.Error())
 	}
 	return nil
 }
