@@ -7,12 +7,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// enum values for storage mode
+// enum values for mode
 type Mode string
 
 const (
-	File Mode = "file"
-	DB   Mode = "database"
+	Prod Mode = "prod"
+	Dev  Mode = "dev"
 )
 
 type DBConfig struct {
