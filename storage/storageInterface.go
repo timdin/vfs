@@ -6,7 +6,7 @@ import (
 
 type Storage interface {
 	Register(name string) error
-	// CreateFolder(user, folderName, description string) error
+	CreateFolder(userName, folderName, description string) error
 	// CreateFile(user, folderName, fileName, description string) error
 	// DeleteFolder(user, folderName string) error
 	// DeleteFile(user, folderName, fileName string) error

@@ -46,3 +46,22 @@ func (db *DBImpl) Register(name string) error {
 	}
 	return nil
 }
+
+func (db *DBImpl) CreateFolder(userName, folderName, description string) error {
+	// look up the user with the given name, fail if not found
+	var existingUser *model.User
+	if err := db.db.Where("name =?", userName).First(&existingUser).Error; err != nil {
+		return errors.New("Failed to find user: " + err.Error())
+	}
+
+	data := &model.Folder{
+		Name:        folderName,
+		UserID:      existingUser.ID,
+		Description: description,
+	}
+	if err := db.db.Create(data).Error; err != nil {
+		// Handle the error, which can occur if the name conflicts
+		return errors.New("Failed to create folder: " + err.Error())
+	}
+	return nil
+}
