@@ -12,6 +12,10 @@ func initDeleteFolder(rootCmd *cobra.Command, storage storage.Storage) {
 		Short: "Delete folder",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			userName, folderName := args[0], args[1]
+			if err := storage.DeleteFolder(userName, folderName); err != nil {
+				return err
+			}
 			return nil
 		},
 	}

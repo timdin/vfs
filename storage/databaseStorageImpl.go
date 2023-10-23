@@ -87,3 +87,22 @@ func (db *DBImpl) CreateFile(userName, folderName, fileName, description string)
 	}
 	return nil
 }
+
+func (db *DBImpl) DeleteFolder(userName, folderName string) error {
+	var existingUser *model.User
+	if err := db.db.Where("name =?", userName).First(&existingUser).Error; err != nil {
+		return errors.New("Failed to find user: " + err.Error())
+	}
+	var existingFolder *model.Folder
+	if err := db.db.Where("user_id =? and name =?", existingUser.ID, folderName).First(&existingFolder).Error; err != nil {
+		return errors.New("Failed to find folder: " + err.Error())
+	}
+	data := &model.Folder{
+		Model: gorm.Model{ID: existingFolder.ID},
+	}
+	if err := db.db.Delete(data).Error; err != nil {
+		// Handle the error, which can occur if the name conflicts
+		return errors.New("Failed to delete folder: " + err.Error())
+	}
+	return nil
+}
