@@ -45,7 +45,7 @@ func TestCreateFolder(t *testing.T) {
 			},
 		},
 		{
-			name:    "create user invalid command case (folder name not provided)",
+			name:    "create folder invalid command case (folder name not provided)",
 			args:    []string{"create-folder", "timdin"},
 			wantErr: true,
 		},

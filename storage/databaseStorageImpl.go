@@ -65,3 +65,25 @@ func (db *DBImpl) CreateFolder(userName, folderName, description string) error {
 	}
 	return nil
 }
+
+func (db *DBImpl) CreateFile(userName, folderName, fileName, description string) error {
+	var existingUser *model.User
+	if err := db.db.Where("name =?", userName).First(&existingUser).Error; err != nil {
+		return errors.New("Failed to find user: " + err.Error())
+	}
+	var existingFolder *model.Folder
+	if err := db.db.Where("user_id =? and name =?", existingUser.ID, folderName).First(&existingFolder).Error; err != nil {
+		return errors.New("Failed to find folder: " + err.Error())
+	}
+	data := &model.File{
+		Name:        fileName,
+		UserID:      existingUser.ID,
+		FolderID:    existingFolder.ID,
+		Description: description,
+	}
+	if err := db.db.Create(data).Error; err != nil {
+		// Handle the error, which can occur if the name conflicts
+		return errors.New("Failed to create folder: " + err.Error())
+	}
+	return nil
+}

@@ -33,6 +33,20 @@ func (m *MockStorage) EXPECT() *MockStorageMockRecorder {
 	return m.recorder
 }
 
+// CreateFile mocks base method.
+func (m *MockStorage) CreateFile(arg0, arg1, arg2, arg3 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateFile", arg0, arg1, arg2, arg3)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateFile indicates an expected call of CreateFile.
+func (mr *MockStorageMockRecorder) CreateFile(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateFile", reflect.TypeOf((*MockStorage)(nil).CreateFile), arg0, arg1, arg2, arg3)
+}
+
 // CreateFolder mocks base method.
 func (m *MockStorage) CreateFolder(arg0, arg1, arg2 string) error {
 	m.ctrl.T.Helper()
