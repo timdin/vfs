@@ -9,9 +9,8 @@ import (
 	"github.com/timdin/vfs/mock"
 )
 
-func TestExecute(t *testing.T) {
+func TestRegister(t *testing.T) {
 	ctl := gomock.NewController(t)
-	defer ctl.Finish()
 	testStorage := mock.NewMockStorage(ctl)
 	rootCmd := InitCmd(testStorage)
 
@@ -36,6 +35,11 @@ func TestExecute(t *testing.T) {
 			doMock: func() {
 				testStorage.EXPECT().Register("timdin").Return(fmt.Errorf("timdin already exists"))
 			},
+		},
+		{
+			name:    "create user invalid command case",
+			args:    []string{"register"},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {

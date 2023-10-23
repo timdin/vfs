@@ -18,6 +18,11 @@ func InitCmd(storage storage.Storage) *cobra.Command {
 	initRegister(rootCmd, storage)
 	initCreateFile(rootCmd, storage)
 	initCreateFolder(rootCmd, storage)
+	initDeleteFolder(rootCmd, storage)
+	initDeleteFile(rootCmd, storage)
+	initListFolder(rootCmd, storage)
+	initListFile(rootCmd, storage)
+	initRenameFolder(rootCmd, storage)
 
 	return rootCmd
 }
