@@ -4,7 +4,7 @@ import (
 	"github.com/timdin/vfs/configs"
 )
 
-//go:generate mockgen -destination=../mock/storage_mock.go -package=storage github.com/timdin/vfs/storage Storage
+//go:generate mockgen -destination=../mock/storage_mock.go -package=mock github.com/timdin/vfs/storage Storage
 type Storage interface {
 	Register(name string) error
 	CreateFolder(userName, folderName, description string) error
@@ -15,9 +15,9 @@ type Storage interface {
 	// ListFile(user, folderName, sortBy, order string) error
 }
 
-var StorageInstance Storage
+func InitStorage() Storage {
+	var StorageInstance Storage
 
-func InitStorage() {
 	switch configs.AppConfig.Mode {
 	case configs.Prod:
 		var err error
@@ -32,5 +32,5 @@ func InitStorage() {
 			panic(err)
 		}
 	}
-
+	return StorageInstance
 }

@@ -2,22 +2,22 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/timdin/vfs/storage"
 )
 
-var rootCmd = &cobra.Command{
-	Use:   "myvfs",
-	Short: "A sample VFS CLI application",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Please provide a subcommand.")
-	},
-}
-
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+func InitCmd(storage storage.Storage) *cobra.Command {
+	rootCmd := &cobra.Command{
+		Use:   "myvfs",
+		Short: "A sample VFS CLI application",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println("Please provide a subcommand.")
+		},
 	}
+	initRegister(rootCmd, storage)
+	initCreateFile(rootCmd, storage)
+	initCreateFolder(rootCmd, storage)
+
+	return rootCmd
 }
