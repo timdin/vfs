@@ -15,27 +15,31 @@ const (
 	Dev  Mode = "dev"
 )
 
-type DBConfig struct {
+type MySqlConfig struct {
 	Conn string `yaml:"conn"`
+}
+
+type SqliteConfig struct {
+	Path string `yaml:"path"`
 }
 
 // define config type
 type Config struct {
-	Mode     Mode     `yaml:"mode"`
-	DBconfig DBConfig `yaml:"database"`
+	Mode           Mode         `yaml:"app_mode"`
+	RemoteDBconfig MySqlConfig  `yaml:"database"`
+	LocalDBconfig  SqliteConfig `yaml:"local_database"`
 }
 
-var AppConfig *Config
-
-func LoadConfig() {
-	AppConfig = &Config{}
+func LoadConfig() *Config {
+	c := &Config{}
 	data, err := os.ReadFile("config.yaml")
 	if err != nil {
 		panic(err)
 	}
-	err = yaml.Unmarshal(data, &AppConfig)
+	err = yaml.Unmarshal(data, c)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("current mode: ", AppConfig.Mode)
+	fmt.Println("current mode: ", c.Mode)
+	return c
 }
