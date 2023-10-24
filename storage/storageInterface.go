@@ -14,7 +14,7 @@ type Storage interface {
 	DeleteFolder(userName, folderName string) error
 	DeleteFile(userName, folderName, fileName string) error
 	ListFolder(userName string, sortBy constants.SortByField, order constants.Order) ([]*model.Folder, error)
-	// ListFile(user, folderName, sortBy, order string) error
+	ListFile(userName, folderName string, sortBy constants.SortByField, order constants.Order) ([]*model.File, error)
 	// RenameFolder(user, folderName, newName string) error
 }
 

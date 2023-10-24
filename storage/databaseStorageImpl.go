@@ -146,10 +146,26 @@ func (db *DBImpl) ListFolder(userName string, sortBy constants.SortByField, orde
 		return nil, err
 	}
 	var folders []*model.Folder
-	if err := db.db.Where("user_id =?", existingUser.ID).Find(&folders).Order(fmt.Sprintf("%s %s", sortBy, order)).Error; err != nil {
+	if err := db.db.Order(fmt.Sprintf("%s %s", sortBy, order)).Where("user_id =?", existingUser.ID).Find(&folders).Error; err != nil {
 		return nil, errors.New("Failed to list folders: " + err.Error())
 	}
 	return folders, nil
+}
+
+func (db *DBImpl) ListFile(userName, folderName string, sortBy constants.SortByField, order constants.Order) ([]*model.File, error) {
+	existingUser := &model.User{}
+	if err := db.lookUpUser(userName, existingUser); err != nil {
+		return nil, err
+	}
+	existingFolder := &model.Folder{}
+	if err := db.lookUpFolder(existingUser, folderName, existingFolder); err != nil {
+		return nil, err
+	}
+	var files []*model.File
+	if err := db.db.Order(fmt.Sprintf("%s %s", sortBy, order)).Where("user_id =? and folder_id =?", existingUser.ID, existingFolder.ID).Find(&files).Error; err != nil {
+		return nil, errors.New("Failed to list files: " + err.Error())
+	}
+	return files, nil
 }
 
 func (db *DBImpl) lookUpFile(existingUser *model.User, existingFolder *model.Folder, fileName string, existingFile *model.File) error {

@@ -72,6 +72,7 @@ func TestListFolder(t *testing.T) {
 			if tt.doMock != nil {
 				tt.doMock()
 			}
+			// init root cmd on each case execution to purge the flag variables
 			rootCmd := InitCmd(testStorage)
 			actual := new(bytes.Buffer)
 			rootCmd.SetOut(actual)

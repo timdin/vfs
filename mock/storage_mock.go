@@ -91,6 +91,21 @@ func (mr *MockStorageMockRecorder) DeleteFolder(arg0, arg1 interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteFolder", reflect.TypeOf((*MockStorage)(nil).DeleteFolder), arg0, arg1)
 }
 
+// ListFile mocks base method.
+func (m *MockStorage) ListFile(arg0, arg1 string, arg2 constants.SortByField, arg3 constants.Order) ([]*model.File, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListFile", arg0, arg1, arg2, arg3)
+	ret0, _ := ret[0].([]*model.File)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListFile indicates an expected call of ListFile.
+func (mr *MockStorageMockRecorder) ListFile(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListFile", reflect.TypeOf((*MockStorage)(nil).ListFile), arg0, arg1, arg2, arg3)
+}
+
 // ListFolder mocks base method.
 func (m *MockStorage) ListFolder(arg0 string, arg1 constants.SortByField, arg2 constants.Order) ([]*model.Folder, error) {
 	m.ctrl.T.Helper()

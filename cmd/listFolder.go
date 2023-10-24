@@ -15,7 +15,6 @@ func initListFolder(rootCmd *cobra.Command, storage storage.Storage) {
 		Short: "List folders",
 		Args:  cobra.RangeArgs(1, 2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Println(args, sortByNameArg, sortByCreatedArg)
 			user := args[0]
 			// set default sort by field to name
 			applySortField := constants.SortByName
