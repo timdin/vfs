@@ -13,6 +13,7 @@ type Storage interface {
 	DeleteFile(userName, folderName, fileName string) error
 	// ListFolder(user, sortBy, order string) error
 	// ListFile(user, folderName, sortBy, order string) error
+	// RenameFolder(user, folderName, newName string) error
 }
 
 func InitStorage() Storage {

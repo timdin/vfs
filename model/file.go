@@ -2,6 +2,8 @@ package model
 
 import (
 	"errors"
+	"fmt"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -21,4 +23,15 @@ func (f *File) BeforeCreate(tx *gorm.DB) (err error) {
 		return errors.New("File with the same name under same folder already exists")
 	}
 	return nil
+}
+
+// create a stringer for file, but the user and folder information is not included
+// these information will be appended in the command handler
+func (f *File) String() string {
+	// set default value for description as N/A
+	d := "N/A"
+	if f.Description != "" {
+		d = f.Description
+	}
+	return fmt.Sprintf("%v\t%v\t%v", f.Name, d, f.Model.CreatedAt.Format(time.RFC3339))
 }
