@@ -8,6 +8,8 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	constants "github.com/timdin/vfs/constants"
+	model "github.com/timdin/vfs/model"
 )
 
 // MockStorage is a mock of Storage interface.
@@ -87,6 +89,21 @@ func (m *MockStorage) DeleteFolder(arg0, arg1 string) error {
 func (mr *MockStorageMockRecorder) DeleteFolder(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteFolder", reflect.TypeOf((*MockStorage)(nil).DeleteFolder), arg0, arg1)
+}
+
+// ListFolder mocks base method.
+func (m *MockStorage) ListFolder(arg0 string, arg1 constants.SortByField, arg2 constants.Order) ([]*model.Folder, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListFolder", arg0, arg1, arg2)
+	ret0, _ := ret[0].([]*model.Folder)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListFolder indicates an expected call of ListFolder.
+func (mr *MockStorageMockRecorder) ListFolder(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListFolder", reflect.TypeOf((*MockStorage)(nil).ListFolder), arg0, arg1, arg2)
 }
 
 // Register mocks base method.

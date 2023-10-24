@@ -2,7 +2,9 @@ package storage
 
 import (
 	"errors"
+	"fmt"
 
+	"github.com/timdin/vfs/constants"
 	"github.com/timdin/vfs/model"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -49,7 +51,7 @@ func (db *DBImpl) Register(name string) error {
 
 func (db *DBImpl) CreateFolder(userName, folderName, description string) error {
 	// look up the user with the given name, fail if not found
-	var existingUser *model.User
+	existingUser := &model.User{}
 	if err := db.lookUpUser(userName, existingUser); err != nil {
 		return err
 	}
@@ -67,11 +69,11 @@ func (db *DBImpl) CreateFolder(userName, folderName, description string) error {
 }
 
 func (db *DBImpl) CreateFile(userName, folderName, fileName, description string) error {
-	var existingUser *model.User
+	existingUser := &model.User{}
 	if err := db.lookUpUser(userName, existingUser); err != nil {
 		return err
 	}
-	var existingFolder *model.Folder
+	existingFolder := &model.Folder{}
 	if err := db.lookUpFolder(existingUser, folderName, existingFolder); err != nil {
 		return err
 	}
@@ -89,11 +91,11 @@ func (db *DBImpl) CreateFile(userName, folderName, fileName, description string)
 }
 
 func (db *DBImpl) DeleteFolder(userName, folderName string) error {
-	var existingUser *model.User
+	existingUser := &model.User{}
 	if err := db.db.Where("name =?", userName).First(&existingUser).Error; err != nil {
 		return errors.New("Failed to find user: " + err.Error())
 	}
-	var existingFolder *model.Folder
+	existingFolder := &model.Folder{}
 	if err := db.db.Where("user_id =? and name =?", existingUser.ID, folderName).First(&existingFolder).Error; err != nil {
 		return errors.New("Failed to find folder: " + err.Error())
 	}
@@ -115,15 +117,15 @@ func (db *DBImpl) DeleteFolder(userName, folderName string) error {
 }
 
 func (db *DBImpl) DeleteFile(userName, folderName, fileName string) error {
-	var existingUser *model.User
+	existingUser := &model.User{}
 	if err := db.lookUpUser(userName, existingUser); err != nil {
 		return err
 	}
-	var existingFolder *model.Folder
+	existingFolder := &model.Folder{}
 	if err := db.lookUpFolder(existingUser, folderName, existingFolder); err != nil {
 		return err
 	}
-	var existingFile *model.File
+	existingFile := &model.File{}
 	if err := db.lookUpFile(existingUser, existingFolder, fileName, existingFile); err != nil {
 		return err
 	}
@@ -136,6 +138,18 @@ func (db *DBImpl) DeleteFile(userName, folderName, fileName string) error {
 		return errors.New("Failed to delete file: " + err.Error())
 	}
 	return nil
+}
+
+func (db *DBImpl) ListFolder(userName string, sortBy constants.SortByField, order constants.Order) ([]*model.Folder, error) {
+	existingUser := &model.User{}
+	if err := db.lookUpUser(userName, existingUser); err != nil {
+		return nil, err
+	}
+	var folders []*model.Folder
+	if err := db.db.Where("user_id =?", existingUser.ID).Find(&folders).Order(fmt.Sprintf("%s %s", sortBy, order)).Error; err != nil {
+		return nil, errors.New("Failed to list folders: " + err.Error())
+	}
+	return folders, nil
 }
 
 func (db *DBImpl) lookUpFile(existingUser *model.User, existingFolder *model.Folder, fileName string, existingFile *model.File) error {

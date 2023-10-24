@@ -2,6 +2,8 @@ package storage
 
 import (
 	"github.com/timdin/vfs/configs"
+	"github.com/timdin/vfs/constants"
+	"github.com/timdin/vfs/model"
 )
 
 //go:generate mockgen -destination=../mock/storage_mock.go -package=mock github.com/timdin/vfs/storage Storage
@@ -11,7 +13,7 @@ type Storage interface {
 	CreateFile(userName, folderName, fileName, description string) error
 	DeleteFolder(userName, folderName string) error
 	DeleteFile(userName, folderName, fileName string) error
-	// ListFolder(user, sortBy, order string) error
+	ListFolder(userName string, sortBy constants.SortByField, order constants.Order) ([]*model.Folder, error)
 	// ListFile(user, folderName, sortBy, order string) error
 	// RenameFolder(user, folderName, newName string) error
 }
