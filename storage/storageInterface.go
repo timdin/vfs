@@ -15,7 +15,7 @@ type Storage interface {
 	DeleteFile(userName, folderName, fileName string) error
 	ListFolder(userName string, sortBy constants.SortByField, order constants.Order) ([]*model.Folder, error)
 	ListFile(userName, folderName string, sortBy constants.SortByField, order constants.Order) ([]*model.File, error)
-	// RenameFolder(user, folderName, newName string) error
+	RenameFolder(user, folderName, newName string) error
 }
 
 func InitStorage() Storage {

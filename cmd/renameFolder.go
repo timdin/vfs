@@ -12,6 +12,10 @@ func initRenameFolder(rootCmd *cobra.Command, storage storage.Storage) {
 		Short: "Rename folder",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			userName, folderName, newFolderName := args[0], args[1], args[2]
+			if err := storage.RenameFolder(userName, folderName, newFolderName); err != nil {
+				return err
+			}
 			return nil
 		},
 	}

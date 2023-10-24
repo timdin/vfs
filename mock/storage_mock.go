@@ -134,3 +134,17 @@ func (mr *MockStorageMockRecorder) Register(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Register", reflect.TypeOf((*MockStorage)(nil).Register), arg0)
 }
+
+// RenameFolder mocks base method.
+func (m *MockStorage) RenameFolder(arg0, arg1, arg2 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RenameFolder", arg0, arg1, arg2)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RenameFolder indicates an expected call of RenameFolder.
+func (mr *MockStorageMockRecorder) RenameFolder(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RenameFolder", reflect.TypeOf((*MockStorage)(nil).RenameFolder), arg0, arg1, arg2)
+}

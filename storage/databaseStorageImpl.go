@@ -168,6 +168,20 @@ func (db *DBImpl) ListFile(userName, folderName string, sortBy constants.SortByF
 	return files, nil
 }
 
+func (db *DBImpl) RenameFolder(userName, folderName, newName string) error {
+	existingUser := &model.User{}
+	if err := db.db.Where("name =?", userName).First(&existingUser).Error; err != nil {
+		return errors.New("Failed to find user: " + err.Error())
+	}
+	existingFolder := &model.Folder{}
+	if err := db.db.Where("user_id =? and name =?", existingUser.ID, folderName).First(&existingFolder).Error; err != nil {
+		return errors.New("Failed to find folder: " + err.Error())
+	}
+	existingFolder.Name = newName
+	db.db.Save(existingFolder)
+	return nil
+}
+
 func (db *DBImpl) lookUpFile(existingUser *model.User, existingFolder *model.Folder, fileName string, existingFile *model.File) error {
 	if err := db.db.Where("user_id =? and folder_id=? and name =?", existingUser.ID, existingFolder.ID, fileName).First(&existingFile).Error; err != nil {
 		return errors.New("Failed to find file: " + err.Error())
