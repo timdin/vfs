@@ -1,5 +1,5 @@
-app_mode: "dev"
-storage_mode: "remote"
+db_mode: "dev"
+db_type: "remote"
 
 database:
   driver: mysql

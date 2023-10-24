@@ -15,6 +15,13 @@ const (
 	Dev  Mode = "dev"
 )
 
+type StorageType string
+
+const (
+	RemoteStorage StorageType = "remote"
+	LocalStorage  StorageType = "local"
+)
+
 type MySqlConfig struct {
 	Conn string `yaml:"conn"`
 }
@@ -25,7 +32,8 @@ type SqliteConfig struct {
 
 // define config type
 type Config struct {
-	Mode           Mode         `yaml:"app_mode"`
+	DBmode         Mode         `yaml:"db_mode"`
+	DBtype         StorageType  `yaml:"db_type"`
 	RemoteDBconfig MySqlConfig  `yaml:"database"`
 	LocalDBconfig  SqliteConfig `yaml:"local_database"`
 }
@@ -40,6 +48,6 @@ func LoadConfig() *Config {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("current mode: ", c.Mode)
+	fmt.Println("current mode: ", c.DBmode)
 	return c
 }

@@ -20,6 +20,10 @@ const (
 	SortByCreatedFlag = "sort-created"
 )
 
+const (
+	TestDB = "./test_database.db"
+)
+
 type SortByField string
 
 const (

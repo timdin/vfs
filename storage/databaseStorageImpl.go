@@ -7,6 +7,7 @@ import (
 	"github.com/timdin/vfs/constants"
 	"github.com/timdin/vfs/model"
 	"gorm.io/driver/mysql"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -15,27 +16,22 @@ type DBImpl struct {
 	db *gorm.DB
 }
 
-func initDBProd(dbConfig string) (*DBImpl, error) {
-	return initDB(dbConfig, &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Silent),
-	})
-}
-func initDBDev(dbConfig string) (*DBImpl, error) {
-	return initDB(dbConfig, &gorm.Config{})
+func initRemoteDB(conn string) gorm.Dialector {
+	return mysql.Open(conn)
 }
 
-func initDB(dbConfig string, gormConfig *gorm.Config) (*DBImpl, error) {
-	db, err := gorm.Open(mysql.Open(dbConfig), gormConfig)
-	if err != nil {
-		return nil, err
+func initLocalDB(path string) gorm.Dialector {
+	return sqlite.Open(path)
+}
+
+func initDBProdConfig() *gorm.Config {
+	return &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
 	}
-	migrateErr := db.AutoMigrate(model.User{}, model.Folder{}, model.File{})
-	if migrateErr != nil {
-		return nil, err
-	}
-	return &DBImpl{
-		db: db,
-	}, nil
+}
+
+func initDBDevConfig() *gorm.Config {
+	return &gorm.Config{}
 }
 
 func (db *DBImpl) Register(name string) error {
