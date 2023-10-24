@@ -50,8 +50,8 @@ func (db *DBImpl) Register(name string) error {
 func (db *DBImpl) CreateFolder(userName, folderName, description string) error {
 	// look up the user with the given name, fail if not found
 	var existingUser *model.User
-	if err := db.db.Where("name =?", userName).First(&existingUser).Error; err != nil {
-		return errors.New("Failed to find user: " + err.Error())
+	if err := db.lookUpUser(userName, existingUser); err != nil {
+		return err
 	}
 
 	data := &model.Folder{
@@ -68,12 +68,12 @@ func (db *DBImpl) CreateFolder(userName, folderName, description string) error {
 
 func (db *DBImpl) CreateFile(userName, folderName, fileName, description string) error {
 	var existingUser *model.User
-	if err := db.db.Where("name =?", userName).First(&existingUser).Error; err != nil {
-		return errors.New("Failed to find user: " + err.Error())
+	if err := db.lookUpUser(userName, existingUser); err != nil {
+		return err
 	}
 	var existingFolder *model.Folder
-	if err := db.db.Where("user_id =? and name =?", existingUser.ID, folderName).First(&existingFolder).Error; err != nil {
-		return errors.New("Failed to find folder: " + err.Error())
+	if err := db.lookUpFolder(existingUser, folderName, existingFolder); err != nil {
+		return err
 	}
 	data := &model.File{
 		Name:        fileName,
@@ -116,16 +116,16 @@ func (db *DBImpl) DeleteFolder(userName, folderName string) error {
 
 func (db *DBImpl) DeleteFile(userName, folderName, fileName string) error {
 	var existingUser *model.User
-	if err := db.db.Where("name =?", userName).First(&existingUser).Error; err != nil {
-		return errors.New("Failed to find user: " + err.Error())
+	if err := db.lookUpUser(userName, existingUser); err != nil {
+		return err
 	}
 	var existingFolder *model.Folder
-	if err := db.db.Where("user_id =? and name =?", existingUser.ID, folderName).First(&existingFolder).Error; err != nil {
-		return errors.New("Failed to find folder: " + err.Error())
+	if err := db.lookUpFolder(existingUser, folderName, existingFolder); err != nil {
+		return err
 	}
 	var existingFile *model.File
-	if err := db.db.Where("user_id =? and folder_id=? and name =?", existingUser.ID, existingFolder.ID, fileName).First(&existingFile).Error; err != nil {
-		return errors.New("Failed to find file: " + err.Error())
+	if err := db.lookUpFile(existingUser, existingFolder, fileName, existingFile); err != nil {
+		return err
 	}
 	data := &model.File{
 		Model: gorm.Model{ID: existingFile.ID},
@@ -134,6 +134,27 @@ func (db *DBImpl) DeleteFile(userName, folderName, fileName string) error {
 	if err := db.db.Delete(data).Error; err != nil {
 		// Handle the error, which can occur if the name conflicts
 		return errors.New("Failed to delete file: " + err.Error())
+	}
+	return nil
+}
+
+func (db *DBImpl) lookUpFile(existingUser *model.User, existingFolder *model.Folder, fileName string, existingFile *model.File) error {
+	if err := db.db.Where("user_id =? and folder_id=? and name =?", existingUser.ID, existingFolder.ID, fileName).First(&existingFile).Error; err != nil {
+		return errors.New("Failed to find file: " + err.Error())
+	}
+	return nil
+}
+
+func (db *DBImpl) lookUpFolder(existingUser *model.User, folderName string, existingFolder *model.Folder) error {
+	if err := db.db.Where("user_id =? and name =?", existingUser.ID, folderName).First(&existingFolder).Error; err != nil {
+		return errors.New("Failed to find folder: " + err.Error())
+	}
+	return nil
+}
+
+func (db *DBImpl) lookUpUser(userName string, existingUser *model.User) error {
+	if err := db.db.Where("name =?", userName).First(&existingUser).Error; err != nil {
+		return errors.New("Failed to find user: " + err.Error())
 	}
 	return nil
 }
