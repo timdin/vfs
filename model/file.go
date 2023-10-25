@@ -1,7 +1,6 @@
 package model
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -16,11 +15,11 @@ type File struct {
 	Description string
 }
 
-func (f *File) BeforeCreate(tx *gorm.DB) (err error) {
+func (f *File) BeforeSave(tx *gorm.DB) (err error) {
 	var existingFile File
 
 	if err := tx.Where("name = ? and user_id = ? and folder_id=?", f.Name, f.UserID, f.FolderID).First(&existingFile).Error; err == nil {
-		return errors.New("File with the same name under same folder already exists")
+		return fmt.Errorf("File with the name [%s] already exists", f.Name)
 	}
 	return nil
 }

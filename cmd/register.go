@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 	"github.com/timdin/vfs/constants"
 	"github.com/timdin/vfs/storage"
@@ -17,6 +19,7 @@ func initRegister(rootCmd *cobra.Command, storage storage.Storage) {
 			if err != nil {
 				return err
 			}
+			fmt.Printf("User [%s] registered successfully\n", name)
 			return nil
 		},
 	}

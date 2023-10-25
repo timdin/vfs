@@ -88,12 +88,12 @@ func (db *DBImpl) CreateFile(userName, folderName, fileName, description string)
 
 func (db *DBImpl) DeleteFolder(userName, folderName string) error {
 	existingUser := &model.User{}
-	if err := db.db.Where("name =?", userName).First(&existingUser).Error; err != nil {
-		return errors.New("Failed to find user: " + err.Error())
+	if err := db.lookUpUser(userName, existingUser); err != nil {
+		return err
 	}
 	existingFolder := &model.Folder{}
-	if err := db.db.Where("user_id =? and name =?", existingUser.ID, folderName).First(&existingFolder).Error; err != nil {
-		return errors.New("Failed to find folder: " + err.Error())
+	if err := db.lookUpFolder(existingUser, folderName, existingFolder); err != nil {
+		return err
 	}
 	data := &model.Folder{
 		Model: gorm.Model{ID: existingFolder.ID},
@@ -166,35 +166,37 @@ func (db *DBImpl) ListFile(userName, folderName string, sortBy constants.SortByF
 
 func (db *DBImpl) RenameFolder(userName, folderName, newName string) error {
 	existingUser := &model.User{}
-	if err := db.db.Where("name =?", userName).First(&existingUser).Error; err != nil {
-		return errors.New("Failed to find user: " + err.Error())
+	if err := db.lookUpUser(userName, existingUser); err != nil {
+		return err
 	}
 	existingFolder := &model.Folder{}
-	if err := db.db.Where("user_id =? and name =?", existingUser.ID, folderName).First(&existingFolder).Error; err != nil {
-		return errors.New("Failed to find folder: " + err.Error())
+	if err := db.lookUpFolder(existingUser, folderName, existingFolder); err != nil {
+		return err
 	}
 	existingFolder.Name = newName
-	db.db.Save(existingFolder)
+	if err := db.db.Save(existingFolder).Error; err != nil {
+		return err
+	}
 	return nil
 }
 
 func (db *DBImpl) lookUpFile(existingUser *model.User, existingFolder *model.Folder, fileName string, existingFile *model.File) error {
 	if err := db.db.Where("user_id =? and folder_id=? and name =?", existingUser.ID, existingFolder.ID, fileName).First(&existingFile).Error; err != nil {
-		return errors.New("Failed to find file: " + err.Error())
+		return fmt.Errorf("File [%s] not found", fileName)
 	}
 	return nil
 }
 
 func (db *DBImpl) lookUpFolder(existingUser *model.User, folderName string, existingFolder *model.Folder) error {
 	if err := db.db.Where("user_id =? and name =?", existingUser.ID, folderName).First(&existingFolder).Error; err != nil {
-		return errors.New("Failed to find folder: " + err.Error())
+		return fmt.Errorf("Folder [%s] not found", folderName)
 	}
 	return nil
 }
 
 func (db *DBImpl) lookUpUser(userName string, existingUser *model.User) error {
 	if err := db.db.Where("name =?", userName).First(&existingUser).Error; err != nil {
-		return errors.New("Failed to find user: " + err.Error())
+		return fmt.Errorf("User [%s] not found", userName)
 	}
 	return nil
 }

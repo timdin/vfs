@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 	"github.com/timdin/vfs/constants"
 	"github.com/timdin/vfs/storage"
@@ -16,6 +18,7 @@ func initDeleteFolder(rootCmd *cobra.Command, storage storage.Storage) {
 			if err := storage.DeleteFolder(userName, folderName); err != nil {
 				return err
 			}
+			fmt.Printf("Folder [%s] under %s deleted successfully\n", folderName, userName)
 			return nil
 		},
 	}

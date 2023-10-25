@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/timdin/vfs/cmd"
@@ -14,7 +13,6 @@ func main() {
 	storage := storage.InitStorage(config)
 	cmd := cmd.InitCmd(storage)
 	if err := cmd.Execute(); err != nil {
-		fmt.Fprintf(os.Stderr, err.Error())
 		os.Exit(1)
 	}
 }

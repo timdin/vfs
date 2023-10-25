@@ -15,9 +15,14 @@ const (
 	CreateFile   = "create-file"
 	DeleteFile   = "delete-file"
 	ListFile     = "list-files"
+
 	// listing flags
 	SortByNameFlag    = "sort-name"
 	SortByCreatedFlag = "sort-created"
+
+	// valid characters pattern
+	// accept space, underscore, hyphen, and characters from A-Z, a-z, 0-9
+	ValidStringPattern = `^[A-Za-z0-9\s-_]+$`
 )
 
 const (

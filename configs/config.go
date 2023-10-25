@@ -1,7 +1,6 @@
 package configs
 
 import (
-	"fmt"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -48,6 +47,5 @@ func LoadConfig() *Config {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("current mode: ", c.DBmode)
 	return c
 }

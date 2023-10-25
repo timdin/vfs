@@ -1,7 +1,6 @@
 package model
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -15,11 +14,11 @@ type Folder struct {
 	Description string
 }
 
-func (f *Folder) BeforeCreate(tx *gorm.DB) (err error) {
-	var existingFolder Folder
-
-	if err := tx.Where("name = ? and user_id = ?", f.Name, f.UserID).First(&existingFolder).Error; err == nil {
-		return errors.New("Folder with the same name already exists")
+func (f *Folder) BeforeSave(tx *gorm.DB) (err error) {
+	var count int64
+	tx.Model(f).Where("name = ? and user_id = ?", f.Name, f.UserID).Count(&count)
+	if count > 0 {
+		return fmt.Errorf("Folder with the name [%s] already exists", f.Name)
 	}
 	return nil
 }

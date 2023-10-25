@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 	"github.com/timdin/vfs/constants"
 	"github.com/timdin/vfs/storage"
@@ -20,6 +22,7 @@ func initCreateFile(rootCmd *cobra.Command, storage storage.Storage) {
 			if err := storage.CreateFile(userName, folderName, fileName, description); err != nil {
 				return err
 			}
+			fmt.Printf("File [%s] in %s/%s created successfully\n", fileName, userName, folderName)
 			return nil
 		},
 	}
