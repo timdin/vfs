@@ -5,6 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/timdin/vfs/storage"
+	"github.com/timdin/vfs/validation"
 )
 
 func InitCmd(storage storage.Storage) *cobra.Command {
@@ -13,6 +14,12 @@ func InitCmd(storage storage.Storage) *cobra.Command {
 		Short: "A sample VFS CLI application",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("Please provide a subcommand.")
+		},
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := validation.InvalidCharacterValidation(args); err != nil {
+				return err
+			}
+			return nil
 		},
 	}
 	initRegister(rootCmd, storage)
