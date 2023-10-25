@@ -5,12 +5,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/timdin/vfs/constants"
 	"gorm.io/gorm"
 )
 
 func TestFolder_String(t *testing.T) {
 	now := time.Now()
-	nowString := now.Format(time.RFC3339)
+	nowString := now.Format(constants.TimeFormat)
 	testModel := gorm.Model{
 		CreatedAt: now,
 	}
