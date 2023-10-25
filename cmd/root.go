@@ -33,6 +33,7 @@ func InitCmd(storage storage.Storage) *cobra.Command {
 	initListFolder(rootCmd, storage)
 	initListFile(rootCmd, storage)
 	initRenameFolder(rootCmd, storage)
+	initRenameFile(rootCmd, storage)
 
 	return rootCmd
 }

@@ -601,3 +601,71 @@ func TestDBImpl_ListFolder(t *testing.T) {
 		})
 	}
 }
+
+func TestDBImpl_RenameFile(t *testing.T) {
+	defer TeardownTestDB()
+	db := InitTestDB()
+	// set up test user
+	testUserName := "user"
+	db.Register(testUserName)
+	testUser := &model.User{}
+	db.lookUpUser(testUserName, testUser)
+	// set up test folder
+	testFolderName := "folder"
+	db.CreateFolder(testUserName, testFolderName, "")
+	testFolder := &model.Folder{}
+	db.lookUpFolder(testUser, testFolderName, testFolder)
+	// set up test file
+	testFileName := "file"
+	db.CreateFile(testUserName, testFolderName, testFileName, "description1")
+
+	tests := []struct {
+		name            string
+		userName        string
+		folderName      string
+		originalName    string
+		newName         string
+		expectedFile    *model.File
+		wantErr         bool
+		additionalSetup func()
+	}{
+		{
+			name:         "test rename file happy case",
+			userName:     testUserName,
+			folderName:   testFolderName,
+			originalName: testFileName,
+			newName:      "new",
+			expectedFile: &model.File{
+				Name:        "new",
+				UserID:      testUser.ID,
+				Description: "description1",
+			},
+		},
+		{
+			name:         "test rename file unhappy case - file not exists",
+			userName:     testUserName,
+			folderName:   testFolderName,
+			originalName: "not-exist",
+			newName:      "new-not-exist",
+			expectedFile: &model.File{},
+			wantErr:      true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.additionalSetup != nil {
+				tt.additionalSetup()
+			}
+			if err := db.RenameFile(tt.userName, tt.folderName, tt.originalName, tt.newName); (err != nil) != tt.wantErr {
+				t.Errorf("DBImpl.RenameFile() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			actualFile := &model.File{}
+			if err := db.lookUpFile(testUser, testFolder, tt.newName, actualFile); (err != nil) != tt.wantErr {
+				t.Error(err)
+			}
+			if helper.CompareStructIgnoreEmptyValues(*tt.expectedFile, *actualFile) != true {
+				t.Error(cmp.Diff(tt.expectedFile, actualFile))
+			}
+		})
+	}
+}

@@ -180,6 +180,26 @@ func (db *DBImpl) RenameFolder(userName, folderName, newName string) error {
 	return nil
 }
 
+func (db *DBImpl) RenameFile(userName, folderName, fileName, newName string) error {
+	existingUser := &model.User{}
+	if err := db.lookUpUser(userName, existingUser); err != nil {
+		return err
+	}
+	existingFolder := &model.Folder{}
+	if err := db.lookUpFolder(existingUser, folderName, existingFolder); err != nil {
+		return err
+	}
+	existingFile := &model.File{}
+	if err := db.lookUpFile(existingUser, existingFolder, fileName, existingFile); err != nil {
+		return err
+	}
+	existingFile.Name = newName
+	if err := db.db.Save(existingFile).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func (db *DBImpl) lookUpFile(existingUser *model.User, existingFolder *model.Folder, fileName string, existingFile *model.File) error {
 	if err := db.db.Where("user_id =? and folder_id=? and name =?", existingUser.ID, existingFolder.ID, fileName).First(&existingFile).Error; err != nil {
 		return fmt.Errorf("File [%s] not found", fileName)

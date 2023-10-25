@@ -15,4 +15,5 @@ type Storage interface {
 	ListFolder(userName string, sortBy constants.SortByField, order constants.Order) ([]*model.Folder, error)
 	ListFile(userName, folderName string, sortBy constants.SortByField, order constants.Order) ([]*model.File, error)
 	RenameFolder(user, folderName, newName string) error
+	RenameFile(user, folderName, fileName, newName string) error
 }

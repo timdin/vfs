@@ -14,6 +14,7 @@ const (
 	ListFolder   = "list-folders"
 	CreateFile   = "create-file"
 	DeleteFile   = "delete-file"
+	RenameFile   = "rename-file"
 	ListFile     = "list-files"
 
 	// listing flags
