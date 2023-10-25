@@ -17,14 +17,18 @@ Folder management
 
 - create folder: `myvfs create-folder [username] [foldername] [description]?`
 - delete folder: `myvfs delete-folder [username] [foldername]`
-- list folders: `myvfs list-folders [username] [--sort-name|--sort-created] [asc|desc]`
+- list folders: `myvfs list-folders [username] [--sort-name|--sort-created]? [asc|desc]?`
+  - if `--sort-name|--sort-created` not provided, default will be `--sort-name`
+  - if `[asc|desc]` not provided, default will be `asc`
 - rename folder: `myvfs rename-folder [username] [foldername] [new-folder-name]`
 
 File management
 
 - create file: `myvfs create-file [username] [foldername] [filename] [description]?`
 - delete file: `myvfs delete-file [username] [foldername] [filename]`
-- list file: `myvfs list-files [username] [foldername] [--sort-name|--sort-created] [asc|desc]`
+- list file: `myvfs list-files [username] [foldername] [--sort-name|--sort-created]? [asc|desc]?`
+  - if `--sort-name|--sort-created` not provided, default will be `--sort-name`
+  - if `[asc|desc]` not provided, default will be `asc`
 - rename file: `myvfs rename-file [username] [foldername] [filename] [new-file-name]`
 
 ## running the app
