@@ -2,8 +2,8 @@ package model
 
 import (
 	"fmt"
-	"time"
 
+	"github.com/timdin/vfs/constants"
 	"gorm.io/gorm"
 )
 
@@ -31,5 +31,5 @@ func (f *Folder) String() string {
 	if f.Description != "" {
 		d = f.Description
 	}
-	return fmt.Sprintf("%v\t%v\t%v", f.Name, d, f.Model.CreatedAt.Format(time.RFC3339))
+	return fmt.Sprintf("%v\t%v\t%v", f.Name, d, f.Model.CreatedAt.Format(constants.TimeFormat))
 }

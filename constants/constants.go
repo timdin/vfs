@@ -23,6 +23,12 @@ const (
 	// valid characters pattern
 	// accept space, underscore, hyphen, and characters from A-Z, a-z, 0-9
 	ValidStringPattern = `^[A-Za-z0-9\s-_]+$`
+
+	// valid character length
+	ValidLength = 20
+
+	// time format
+	TimeFormat = "2006-01-02 15:04:05"
 )
 
 const (
