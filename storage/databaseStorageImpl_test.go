@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/timdin/vfs/constants"
 	"github.com/timdin/vfs/helper"
 	"github.com/timdin/vfs/model"
 )
@@ -410,6 +411,192 @@ func TestDBImpl_RenameFolder(t *testing.T) {
 			}
 			if helper.CompareStructIgnoreEmptyValues(*tt.expectedFolder, *actualFolder) != true {
 				t.Error(cmp.Diff(tt.expectedFolder, actualFolder))
+			}
+		})
+	}
+}
+
+func TestDBImpl_ListFile(t *testing.T) {
+	defer TeardownTestDB()
+	db := InitTestDB()
+	// set up test user
+	testUserName := "user"
+	db.Register(testUserName)
+	testUser := &model.User{}
+	db.lookUpUser(testUserName, testUser)
+	// set up test folder
+	testFolderName1 := "test1"
+	db.CreateFolder(testUserName, testFolderName1, "description1")
+	actualFolder1 := &model.Folder{}
+	db.lookUpFolder(testUser, testFolderName1, actualFolder1)
+	testFolderName2 := "test2"
+	db.CreateFolder(testUserName, testFolderName2, "description1")
+	// set up test file
+	testFileName1 := "test2"
+	db.CreateFile(testUserName, testFolderName1, testFileName1, "")
+	testFileName2 := "test1"
+	db.CreateFile(testUserName, testFolderName1, testFileName2, "")
+	testFile1 := &model.File{}
+	db.lookUpFile(testUser, actualFolder1, testFileName1, testFile1)
+	testFile2 := &model.File{}
+	db.lookUpFile(testUser, actualFolder1, testFileName2, testFile2)
+
+	tests := []struct {
+		name            string
+		userName        string
+		folderName      string
+		expectedFiles   []*model.File
+		sortBy          constants.SortByField
+		order           constants.Order
+		wantErr         bool
+		additionalSetup func()
+	}{
+		{
+			name:          "test list file happy case - order by created ascending",
+			userName:      testUserName,
+			folderName:    testFolderName1,
+			sortBy:        constants.SortByCreated,
+			order:         constants.OrderAsc,
+			expectedFiles: []*model.File{testFile2, testFile1},
+		},
+		{
+			name:          "test list file happy case - order by created descending",
+			userName:      testUserName,
+			folderName:    testFolderName1,
+			sortBy:        constants.SortByCreated,
+			order:         constants.OrderDesc,
+			expectedFiles: []*model.File{testFile1, testFile2},
+		},
+		{
+			name:          "test list file happy case - order by name ascending",
+			userName:      testUserName,
+			folderName:    testFolderName1,
+			sortBy:        constants.SortByName,
+			order:         constants.OrderAsc,
+			expectedFiles: []*model.File{testFile2, testFile1},
+		},
+		{
+			name:          "test list file happy case - order by name descending",
+			userName:      testUserName,
+			folderName:    testFolderName1,
+			sortBy:        constants.SortByName,
+			order:         constants.OrderDesc,
+			expectedFiles: []*model.File{testFile1, testFile2},
+		},
+		{
+			name:          "test list file happy case - no file found",
+			userName:      testUserName,
+			folderName:    testFolderName2,
+			sortBy:        constants.SortByName,
+			order:         constants.OrderDesc,
+			expectedFiles: []*model.File{},
+		},
+		{
+			name:          "test list file unhappy case - not exist folder",
+			userName:      testUserName,
+			folderName:    "not exist folder",
+			sortBy:        constants.SortByName,
+			order:         constants.OrderDesc,
+			expectedFiles: []*model.File{},
+			wantErr:       true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			res, err := db.ListFile(tt.userName, tt.folderName, tt.sortBy, tt.order)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("DBImpl.ListFile() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if helper.CompareStructSliceIgnoreEmptyValues(tt.expectedFiles, res) != true {
+				t.Error(cmp.Diff(tt.expectedFiles, res))
+			}
+		})
+	}
+}
+
+func TestDBImpl_ListFolder(t *testing.T) {
+	defer TeardownTestDB()
+	db := InitTestDB()
+	// set up test user
+	testUserName := "user"
+	db.Register(testUserName)
+	testUser := &model.User{}
+	db.lookUpUser(testUserName, testUser)
+	testNoFolderUserName := "no-folder-user"
+	db.Register(testNoFolderUserName)
+	// set up test folder
+	testFolderName1 := "test2"
+	db.CreateFolder(testUserName, testFolderName1, "description1")
+	actualFolder1 := &model.Folder{}
+	db.lookUpFolder(testUser, testFolderName1, actualFolder1)
+	testFolderName2 := "test1"
+	db.CreateFolder(testUserName, testFolderName2, "description1")
+	actualFolder2 := &model.Folder{}
+	db.lookUpFolder(testUser, testFolderName2, actualFolder2)
+
+	tests := []struct {
+		name            string
+		userName        string
+		expectedFolder  []*model.Folder
+		sortBy          constants.SortByField
+		order           constants.Order
+		wantErr         bool
+		additionalSetup func()
+	}{
+		{
+			name:           "test list folder happy case - order by created ascending",
+			userName:       testUserName,
+			sortBy:         constants.SortByCreated,
+			order:          constants.OrderAsc,
+			expectedFolder: []*model.Folder{actualFolder1, actualFolder2},
+		},
+		{
+			name:           "test list folder happy case - order by created descending",
+			userName:       testUserName,
+			sortBy:         constants.SortByCreated,
+			order:          constants.OrderDesc,
+			expectedFolder: []*model.Folder{actualFolder2, actualFolder1},
+		},
+		{
+			name:           "test list file happy case - order by name ascending",
+			userName:       testUserName,
+			sortBy:         constants.SortByName,
+			order:          constants.OrderAsc,
+			expectedFolder: []*model.Folder{actualFolder2, actualFolder1},
+		},
+		{
+			name:           "test list folder happy case - order by name descending",
+			userName:       testUserName,
+			sortBy:         constants.SortByName,
+			order:          constants.OrderDesc,
+			expectedFolder: []*model.Folder{actualFolder1, actualFolder2},
+		},
+		{
+			name:           "test list folder happy case - user with no folder",
+			userName:       testNoFolderUserName,
+			sortBy:         constants.SortByName,
+			order:          constants.OrderDesc,
+			expectedFolder: []*model.Folder{},
+		},
+		{
+			name:           "test list folder unhappy case - not exist user",
+			userName:       "not-exist",
+			sortBy:         constants.SortByName,
+			order:          constants.OrderDesc,
+			expectedFolder: []*model.Folder{},
+			wantErr:        true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			res, err := db.ListFolder(tt.userName, tt.sortBy, tt.order)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("DBImpl.ListFile() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if helper.CompareStructSliceIgnoreEmptyValues(tt.expectedFolder, res) != true {
+				t.Error(cmp.Diff(tt.expectedFolder, res))
 			}
 		})
 	}
