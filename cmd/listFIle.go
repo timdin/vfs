@@ -39,8 +39,8 @@ func initListFile(rootCmd *cobra.Command, storage storage.Storage) {
 			if len(res) == 0 {
 				fmt.Printf("Warning: The folder %s/%s is empty\n", user, folder)
 			} else {
-				for _, folder := range res {
-					fmt.Printf("%s\t%s\n", folder, user)
+				for _, file := range res {
+					fmt.Printf("%s\t%s\t%s\n", file, folder, user)
 				}
 			}
 			return nil

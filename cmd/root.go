@@ -19,6 +19,9 @@ func InitCmd(storage storage.Storage) *cobra.Command {
 			if err := validation.InvalidCharacterValidation(args); err != nil {
 				return err
 			}
+			if err := validation.ValidLength(args); err != nil {
+				return err
+			}
 			return nil
 		},
 	}
