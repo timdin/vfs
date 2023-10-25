@@ -13,7 +13,11 @@ func initListFolder(rootCmd *cobra.Command, storage storage.Storage) {
 	listFolder := &cobra.Command{
 		Use:   constants.ListFolder,
 		Short: "List folders",
-		Args:  cobra.RangeArgs(1, 2),
+		Long: `Usage: list-folders [username] [--sort-name|--sort-created] [asc|
+		desc]`,
+		Example: `list-folders [username] [--sort-name|--sort-created] [asc|
+		desc]`,
+		Args: cobra.RangeArgs(1, 2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			user := args[0]
 			// set default sort by field to name
